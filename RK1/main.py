@@ -21,61 +21,60 @@ class MusOrc:
         self.orc_id = orc_id
 
 
-musicians = [
-    Musician(1, "Бетховен"),
-    Musician(2, "Чайковский"),
-    Musician(3, "Прокофьев"),
-]
-
-orcs = [
-    Orchestra(1, "Симфонический оркестр города Гусь Хрустальный", "Симфонический оркестр", 1),
-    Orchestra(2, "Военный оркестр Александровского полка", "Военный оркестр", 2),
-    Orchestra(3, "Bad Apple", "Джазовый оркестр", 3),
-    Orchestra(4, "Масленичное чучело", "Оркестр народных инструментов", 3),
-    Orchestra(5, "Дудочка", "Духовой оркестр", 1),
-    Orchestra(5, "Оркестр имени Петра Ильича Чайковского", "Симфонический оркестр", 2)
-]
-
-mus_orc = [
-    MusOrc(1, 1),
-    MusOrc(2, 2),
-    MusOrc(3, 3),
-    MusOrc(1, 4),
-    MusOrc(2, 5),
-]
+def first_task(one_to_many):
+    """Сортировка по первому элементу (id музыканта)."""
+    return sorted(one_to_many, key=lambda x: x[0])
 
 
-def first_task(musicians):
-    res_1 = sorted(musicians, key=itemgetter(0))
-    return res_1
-
-
-def second_task(orcs):
-    res_2 = []
-    temp_dict = dict()
-    for i in orcs:
-        if i[2] in temp_dict:
-            temp_dict[i[2]] += 1
+def second_task(one_to_many):
+    """Подсчет количества оркестров каждого типа."""
+    temp_dict = {}
+    for _, orchestra_type, _ in one_to_many:
+        if orchestra_type in temp_dict:
+            temp_dict[orchestra_type] += 1
         else:
-            temp_dict[i[2]] = 1
-    for i in temp_dict.keys():
-        res_2.append((i, temp_dict[i]))
-
-    res_2.sort(key=itemgetter(1), reverse=True)
-    return res_2
+            temp_dict[orchestra_type] = 1
+    # Сортировка по убыванию количества
+    return sorted(temp_dict.items(), key=itemgetter(1), reverse=True)
 
 
-def third_task(op_list, end_ch):
-    res_3 = [(i[0], i[2]) for i in op_list if i[0].endswith(end_ch)]
-    return res_3
+def third_task(many_to_many, end_ch):
+    """Фильтрация оркестров, имена которых заканчиваются на заданную букву."""
+    return [(orc_name, orc_type) for orc_name, orc_type, _ in many_to_many if orc_name.endswith(end_ch)]
 
 
 def main():
+    # Данные для работы программы
+    musicians = [
+        Musician(1, "Бетховен"),
+        Musician(2, "Чайковский"),
+        Musician(3, "Прокофьев"),
+    ]
+
+    orcs = [
+        Orchestra(1, "Симфонический оркестр города Гусь Хрустальный", "Симфонический оркестр", 1),
+        Orchestra(2, "Военный оркестр Александровского полка", "Военный оркестр", 2),
+        Orchestra(3, "Bad Apple", "Джазовый оркестр", 3),
+        Orchestra(4, "Масленичное чучело", "Оркестр народных инструментов", 3),
+        Orchestra(5, "Дудочка", "Духовой оркестр", 1),
+        Orchestra(5, "Оркестр имени Петра Ильича Чайковского", "Симфонический оркестр", 2)
+    ]
+
+    mus_orc = [
+        MusOrc(1, 1),
+        MusOrc(2, 2),
+        MusOrc(3, 3),
+        MusOrc(1, 4),
+        MusOrc(2, 5),
+    ]
+
+    # Формирование one_to_many
     one_to_many = [(orc.name, orc.orchestra_type, m.name)
                    for m in musicians
                    for orc in orcs
                    if orc.mus_id == m.id]
 
+    # Формирование many_to_many
     many_to_many_temp = [(m.name, mo.mus_id, mo.orc_id)
                          for m in musicians
                          for mo in mus_orc
@@ -85,6 +84,7 @@ def main():
                     for mus_name, mus_id, orc_id in many_to_many_temp
                     for orc in orcs if orc.id == orc_id]
 
+    # Выполнение заданий
     print('Задание Б1')
     print(first_task(one_to_many))
 
